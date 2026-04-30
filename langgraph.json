@@ -1,0 +1,7 @@
+{
+  "graphs": {
+    "conferenceGraph": {
+      "path": "./src/graphs/stock-conference/graph.ts:conferenceGraph"
+    }
+  }
+}

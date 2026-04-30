@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "earnings-analysis": {
+      "source": "anthropics/financial-services-plugins",
+      "sourceType": "github",
+      "skillPath": "equity-research/skills/earnings-analysis/SKILL.md",
+      "computedHash": "4870cd3deb93e4f0cb84b002b29741ac8a2616b0888cee011cb92a65f5cc2ab2"
+    },
+    "financial-statements": {
+      "source": "anthropics/knowledge-work-plugins",
+      "sourceType": "github",
+      "skillPath": "finance/skills/financial-statements/SKILL.md",
+      "computedHash": "a1d47e9fe416526233ba65dc2d6794332aa7d14d9e3d2f9fc0832f40f96c152d"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    }
+  }
+}
