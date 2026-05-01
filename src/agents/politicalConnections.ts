@@ -1,5 +1,6 @@
 import { createDeepAgent, type SubAgent } from "deepagents";
 import { llm } from "@llm/index";
+import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { politicalConnectionsSubAgent } from "@sub-agents/finance";
 
 const politicalConnectionsSubagents: SubAgent[] = [politicalConnectionsSubAgent];
@@ -11,4 +12,14 @@ export const politicalConnectionsAgent = await createDeepAgent({
   systemPrompt: POLITICAL_CONNECTIONS_PROMPT,
   model: llm,
   subagents: politicalConnectionsSubagents,
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
 });

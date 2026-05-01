@@ -1,5 +1,6 @@
 import { createDeepAgent, type SubAgent } from "deepagents";
 import { llm } from "@llm/index";
+import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 
@@ -15,6 +16,16 @@ export const coreFinanceAgent = await createDeepAgent({
   systemPrompt: CORE_FINANCE_PROMPT,
   model: llm,
   subagents: coreFinanceSubagents,
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
 });
 
 export const coreNewsAgent = await createDeepAgent({
@@ -22,4 +33,14 @@ export const coreNewsAgent = await createDeepAgent({
   systemPrompt: CORE_NEWS_PROMPT,
   model: llm,
   subagents: coreNewsSubagents,
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
 });

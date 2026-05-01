@@ -1,4 +1,5 @@
 import { llm } from "@llm/index";
+import { news } from "@mcps/news-mcp";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
 import z from "zod";
@@ -135,7 +136,7 @@ const newsSentimentSubAgent: SubAgent = {
   name: "News & Sentiment Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch],
+  tools: [...news, internetSearch],
   responseFormat,
   description:
     "Aggregates latest financial news, scores sentiment, detects key events, and tracks narrative shifts over time.",

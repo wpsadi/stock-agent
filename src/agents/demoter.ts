@@ -1,5 +1,6 @@
 import { createDeepAgent, type SubAgent } from "deepagents";
 import { llm } from "@llm/index";
+import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 import { searchSubagent } from "@sub-agents/searchSubagent";
@@ -25,11 +26,21 @@ Delegate all finance, news, and web retrieval to your subagents. Do not call ext
 
 Never speculate without data. Cite sources. Distinguish known vs. unknown risks.`;
 
-const demoterAgent = await createDeepAgent( {
+const demoterAgent = await createDeepAgent({
   name: "Risk-Focused Skeptic",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
   subagents: researchSubagents,
-} );
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
+});
 
 export { demoterAgent };

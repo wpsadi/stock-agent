@@ -1,6 +1,7 @@
 import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { AsyncSubAgent, SubAgent } from "deepagents";
+import { news } from "@mcps/news-mcp";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import z from "zod";
 import { webCrawl } from "@mcps/web-crawler";
@@ -96,7 +97,7 @@ const businessExplorerSubAgent:SubAgent = {
 name:"Company Intelligence Agent",
 systemPrompt:SYSTEM_PROMPT,
 model:llm,
-tools:[internetSearch,...yahooFinance,...webCrawl],
+tools:[internetSearch,...yahooFinance,...news,...webCrawl],
 responseFormat,
 description:"Extracts and analyzes structured intelligence about a company including business model, revenue streams, products, leadership, and sector classification."
 }

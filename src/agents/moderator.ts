@@ -1,5 +1,6 @@
 import { createDeepAgent } from "deepagents";
 import { llm } from "@llm/index";
+import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 
 const MODERATOR_SYSTEM_PROMPT = `You are the **Conference Moderator** — a neutral, fair facilitator managing a multi-round stock analysis panel.
 
@@ -95,11 +96,21 @@ For each round, output structured JSON:
 Now orchestrate the conference.
 `;
 
-const moderatorAgent = await createDeepAgent( {
+const moderatorAgent = await createDeepAgent({
   name: "Moderator",
   systemPrompt: MODERATOR_SYSTEM_PROMPT,
   model: llm,
   subagents: [],
-} );
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
+});
 
 export { moderatorAgent };

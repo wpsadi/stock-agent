@@ -1,5 +1,6 @@
 import { createDeepAgent, type SubAgent } from "deepagents";
 import { llm } from "@llm/index";
+import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 import { searchSubagent } from "@sub-agents/searchSubagent";
@@ -30,11 +31,21 @@ Delegate all finance, news, and web retrieval to your subagents. Do not call ext
 
 Be specific, time-bound, and data-backed. Never hallucinate.`;
 
-const promoterAgent = await createDeepAgent( {
+const promoterAgent = await createDeepAgent({
   name: "Catalyst Hunter",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
   subagents: researchSubagents,
-} );
+  middleware: [
+    modelCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "end",
+    }),
+    toolCallLimitMiddleware({
+      runLimit: 10,
+      exitBehavior: "continue",
+    }),
+  ],
+});
 
 export { promoterAgent };

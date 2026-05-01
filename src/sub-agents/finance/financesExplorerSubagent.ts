@@ -1,6 +1,7 @@
 import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
+import { news } from "@mcps/news-mcp";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import z from "zod";
 import { read } from "@utils/readFile";
@@ -127,7 +128,7 @@ const financialAnalysisSubAgent: SubAgent = {
   name: "Financial Analysis Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch, ...yahooFinance, ...webCrawl],
+  tools: [internetSearch, ...yahooFinance, ...news, ...webCrawl],
   responseFormat,
   skills:[financeSkill],
   description:
