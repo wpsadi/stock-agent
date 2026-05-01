@@ -1,5 +1,4 @@
 import { llm } from "@llm/index";
-import { news } from "@mcps/news-mcp";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
@@ -11,12 +10,12 @@ const SYSTEM_PROMPT=`
   For every request:
   1. Understand the topic, entity, or timeframe (e.g., "today", "latest", "this week").
   2. Construct an effective search query.
-  3. Call news_search to retrieve recent and relevant articles.
+  3. Call internet_search to retrieve recent and relevant articles.
   4. Summarize key developments across sources.
   5. Highlight important facts, trends, and differing viewpoints if present.
 
   Rules:
-  - Always use news_search for current events or recent information.
+  - Always use internet_search for current events or recent information.
   - Prioritize recent, credible, and diverse sources.
   - Do not hallucinate facts—base responses strictly on retrieved articles.
   - If results are sparse, refine the query and retry once.
@@ -35,7 +34,7 @@ const newsSubagent: SubAgent = {
   name: "News Agent",
   description: "A real-time news agent that retrieves, summarizes, and analyzes current news from reliable sources.",
   systemPrompt: SYSTEM_PROMPT,
-  tools: news,
+  tools: [internetSearch],
   
   model: llm,  // Optional override, defaults to main agent model
 };

@@ -1,7 +1,6 @@
 import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
-import { news } from "@mcps/news-mcp";
 import { webCrawl } from "@mcps/web-crawler";
 import z from "zod";
 
@@ -266,7 +265,7 @@ const politicalConnectionsSubAgent: SubAgent = {
   name: "Political Connections Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch, ...news, ...webCrawl],
+  tools: [internetSearch, ...webCrawl],
   responseFormat,
   description:
     "Maps political connections, campaign contributions, lobbying activities, regulatory favors, and conflicts of interest between companies and politicians.",

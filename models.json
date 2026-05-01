@@ -1,0 +1,52 @@
+{
+  "models": [
+    {
+      "id": "kilo-auto/free",
+      "name": "kilo-auto/free",
+      "baseUrl": "https://api.kilo.ai/api/gateway",
+      "apiKey": "${KEY1}",
+      "rateLimit": {
+        "callsPerMinute": 60,
+        "tokensPerMinute": 900000,
+        "requestsPerMinute": 60,
+        "requestsPerDay": 200
+      }
+    },
+    {
+      "id": "kilo-auto/free",
+      "name": "kilo-auto/free",
+      "baseUrl": "https://api.kilo.ai/api/gateway",
+      "apiKey": "${KEY2}",
+      "rateLimit": {
+        "callsPerMinute": 60,
+        "tokensPerMinute": 900000,
+        "requestsPerMinute": 60,
+        "requestsPerDay": 200
+      }
+    },
+    {
+      "id": "kilo-auto/free",
+      "name": "kilo-auto/free",
+      "baseUrl": "https://api.kilo.ai/api/gateway",
+      "apiKey": "${KEY3}",
+      "rateLimit": {
+        "callsPerMinute": 60,
+        "tokensPerMinute": 900000,
+        "requestsPerMinute": 60,
+        "requestsPerDay": 200
+      }
+    },
+    {
+      "id": "kilo-auto/free",
+      "name": "kilo-auto/free",
+      "baseUrl": "https://api.kilo.ai/api/gateway",
+      "apiKey": "${KEY4}",
+      "rateLimit": {
+        "callsPerMinute": 60,
+        "tokensPerMinute": 900000,
+        "requestsPerMinute": 60,
+        "requestsPerDay": 200
+      }
+    }
+  ]
+}

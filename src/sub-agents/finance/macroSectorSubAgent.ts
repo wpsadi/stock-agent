@@ -1,7 +1,6 @@
 import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
-import { news } from "@mcps/news-mcp";
 import { webCrawl } from "@mcps/web-crawler";
 import z from "zod";
 
@@ -189,7 +188,7 @@ const macroSectorSubAgent: SubAgent = {
   name: "Macro & Sector Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch, ...news, ...webCrawl],
+  tools: [internetSearch, ...webCrawl],
   responseFormat,
   description:
     "Analyzes industry trends, regulatory environment, interest rate/inflation sensitivity, and sector growth outlook.",

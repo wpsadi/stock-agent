@@ -2,7 +2,6 @@ import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
 import { yahooFinance } from "@mcps/yahoo-finance";
-import { news } from "@mcps/news-mcp";
 import z from "zod";
 import { webCrawl } from "@mcps/web-crawler";
 import { read } from "@utils/readFile";
@@ -208,7 +207,7 @@ const riskAssessmentSubAgent: SubAgent = {
   name: "Risk Assessment Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch, ...yahooFinance, ...news, ...webCrawl],
+  tools: [internetSearch, ...yahooFinance, ...webCrawl],
   responseFormat,
   skills: [financialStatementsSkill],
   description:

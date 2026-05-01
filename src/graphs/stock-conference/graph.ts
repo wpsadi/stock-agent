@@ -7,11 +7,11 @@ import { compileMemorandum } from "./nodes/compileMemorandum";
 import { compileFinalReport } from "./nodes/compileFinalReport";
 import type { ConferenceState } from "./types";
 
-const StateAnnotation = Annotation.Root({
-  state: Annotation<ConferenceState>({
-    reducer: (prev, next) => {
+export const StateAnnotation = Annotation.Root( {
+  state: Annotation<ConferenceState>( {
+    reducer: ( prev, next ) => {
       // Custom merge for rawData to support parallel agent updates
-      if (prev.rawData && next.rawData) {
+      if ( prev.rawData && next.rawData ) {
         return {
           ...prev,
           ...next,
@@ -19,7 +19,7 @@ const StateAnnotation = Annotation.Root({
           agentThreadIds: { ...prev.agentThreadIds, ...next.agentThreadIds },
         };
       }
-      if (prev.agentThreadIds && next.agentThreadIds) {
+      if ( prev.agentThreadIds && next.agentThreadIds ) {
         return {
           ...prev,
           ...next,
@@ -28,32 +28,32 @@ const StateAnnotation = Annotation.Root({
       }
       return { ...prev, ...next };
     },
-    default: () => createInitialState("", ""),
-  }),
-});
+    default: () => createInitialState( "", "" ),
+  } ),
+} );
 
 export function buildConferenceGraph() {
-  const builder = new StateGraph(StateAnnotation);
+  const builder = new StateGraph( StateAnnotation );
 
   builder
-    .addNode("gather", gatherSubgraph)
-    .addNode("memorandum", compileMemorandum)
-    .addNode("round", roundSubgraph)
-    .addNode("report", compileFinalReport)
-    .addEdge(START, "gather")
-    .addEdge("gather", "memorandum")
-    .addEdge("memorandum", "round")
-    .addConditionalEdges("round", (state: { state: ConferenceState }) => {
-      if (state.state.currentRound < state.state.totalRounds) {
+    .addNode( "gather", gatherSubgraph )
+    .addNode( "memorandum", compileMemorandum )
+    .addNode( "round", roundSubgraph )
+    .addNode( "report", compileFinalReport )
+    .addEdge( START, "gather" )
+    .addEdge( "gather", "memorandum" )
+    .addEdge( "memorandum", "round" )
+    .addConditionalEdges( "round", ( state: { state: ConferenceState } ) => {
+      if ( state.state.currentRound < state.state.totalRounds ) {
         return "round";
       }
       return "report";
-    })
-    .addEdge("report", END);
+    } )
+    .addEdge( "report", END );
 
   return builder;
 }
 
-export const conferenceGraph = buildConferenceGraph().compile({
+export const conferenceGraph = buildConferenceGraph().compile( {
   checkpointer: true,
-});
+} );

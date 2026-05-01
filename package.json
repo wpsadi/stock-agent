@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "start": "bun src/start.ts",
-    "conference": "bun src/run-conference.ts"
+    "conference": "bun src/run-conference.ts",
+    "langgraph:dev": "npx @langchain/langgraph-cli dev",
+    "langgraph:studio": "npx @langchain/langgraph-cli studio"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -14,6 +16,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@langchain/anthropic": "^1.3.28",
     "@langchain/core": "^1.1.42",
     "@langchain/google": "^0.1.11",
     "@langchain/langgraph": "^1.2.9",

@@ -1,7 +1,6 @@
 import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
-import { news } from "@mcps/news-mcp";
 import { webCrawl } from "@mcps/web-crawler";
 import z from "zod";
 
@@ -216,7 +215,7 @@ const patternDetectionManipulationSubAgent: SubAgent = {
   name: "Pattern Detection & Manipulation Agent",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [internetSearch, ...news, ...webCrawl],
+  tools: [internetSearch, ...webCrawl],
   responseFormat,
   description:
     "Identifies patterns between favors, detects quid pro quo sequences, and flags manipulation indicators in political-company interactions.",
