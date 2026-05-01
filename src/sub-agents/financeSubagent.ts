@@ -2,7 +2,11 @@ import { llm } from "@llm/index";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT=`
  You are a financial data agent that provides accurate stock market insights using Yahoo Finance tools.
@@ -35,7 +39,11 @@ const SYSTEM_PROMPT=`
   - Highlight important financial indicators (revenue, profit, growth).
   - Provide simple short explanantion of the data when relevant (e.g., "AAPL is up 2% today due to strong earnings report").
   - For comparisons, clearly state which stock is performing better and why.
-`
+
+${datetimeInfo}
+
+IMPORTANT: When querying for historical data, latest prices, or recent trends, use the current datetime context above as your reference point.
+`;
 
 const financeSubagent: SubAgent = {
   name: "Finance Agent",

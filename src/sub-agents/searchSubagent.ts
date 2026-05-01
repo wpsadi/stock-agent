@@ -2,7 +2,11 @@ import { llm } from "@llm/index";
 import { internetSearch } from "@tools/internet-search";
 import { webCrawl } from "@mcps/web-crawler";
 import type { SubAgent } from "deepagents";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT = `
   You are a web search agent that retrieves accurate, up-to-date information using Tavily search.
@@ -21,6 +25,10 @@ const SYSTEM_PROMPT = `
   - Keep responses concise and factual.
   - Include key findings, not raw dumps.
   - Mention uncertainty if sources conflict.
+
+${datetimeInfo}
+
+IMPORTANT: When searching for "latest", "recent", or time-bound information, use the current datetime context above as your reference point.
 `
 
 const searchSubagent: SubAgent = {

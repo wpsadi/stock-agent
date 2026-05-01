@@ -4,6 +4,11 @@ import type { SubAgent } from "deepagents";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import z from "zod";
 import { webCrawl } from "@mcps/web-crawler";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
+
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT = `
 You are a market data agent that analyzes stock trading behavior and technical indicators.
@@ -49,6 +54,11 @@ Return a structured object with:
 - resistance_levels (array of nearest resistance prices)
 - anomalies (unusual patterns)
 - notes
+
+${datetimeInfo}
+
+IMPORTANT: When analyzing trends, calculating historical volatility, or referencing "current" data, 
+use the datetime context above as your reference point.
 `;
 
 const responseFormat = z.object({

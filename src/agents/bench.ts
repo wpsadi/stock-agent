@@ -4,10 +4,17 @@ import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 import { searchSubagent } from "@sub-agents/searchSubagent";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
 const researchSubagents: SubAgent[] = [financeSubagent, newsSubagent, searchSubagent];
 
-const FINANCIAL_ANALYST_PROMPT = `You are a Financial Analyst. Analyze financial statements, valuation multiples, balance sheet strength, cash flow quality, and capital efficiency. Be precise with numbers: "Debt/EBITDA = 1.8x", "FCF margin improved from 8% to 15%". Focus on revenue growth quality, margin trends, ROE/ROIC, liquidity, and valuation sanity vs peers. Delegate all finance, news, and web retrieval to your subagents.`;
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
+
+const FINANCIAL_ANALYST_PROMPT = `You are a Financial Analyst. Analyze financial statements, valuation multiples, balance sheet strength, cash flow quality, and capital efficiency. Be precise with numbers: "Debt/EBITDA = 1.8x", "FCF margin improved from 8% to 15%". Focus on revenue growth quality, margin trends, ROE/ROIC, liquidity, and valuation sanity vs peers. Delegate all finance, news, and web retrieval to your subagents.
+
+${datetimeInfo}`;
 
 export const financialAnalyst = await createDeepAgent({
   name: "Financial Analyst",
@@ -26,7 +33,9 @@ export const financialAnalyst = await createDeepAgent({
   ],
 });
 
-const NEWS_SENTIMENT_PROMPT = `You are a News and Sentiment Analyst. Track breaking news (last 7-30 days): M and A, lawsuits, product launches, management changes. Assess sentiment evolution and narrative shifts. Cite sources with dates. Focus on recent developments and market reaction to news. Delegate all finance, news, and web retrieval to your subagents.`;
+const NEWS_SENTIMENT_PROMPT = `You are a News and Sentiment Analyst. Track breaking news (last 7-30 days): M and A, lawsuits, product launches, management changes. Assess sentiment evolution and narrative shifts. Cite sources with dates. Focus on recent developments and market reaction to news. Delegate all finance, news, and web retrieval to your subagents.
+
+${datetimeInfo}`;
 
 export const newsSentimentAnalyst = await createDeepAgent({
   name: "News and Sentiment Analyst",
@@ -45,7 +54,9 @@ export const newsSentimentAnalyst = await createDeepAgent({
   ],
 });
 
-const RISK_ASSESSMENT_PROMPT = `You are a Risk Assessor. Evaluate financial, operational, legal, and market risks. Financial: debt burden (D/E, Debt/EBITDA), liquidity (cash burn, current ratio), covenant risk. Operational: customer concentration (over 30 percent from top 3), supplier dependencies, supply chain fragility. Legal: pending litigation, regulatory investigations, compliance issues. Market: disruption risk, competitive pressure, cyclicality. Be precise and quantitative. Flag material risks causing over 30 percent downside. Delegate all finance, news, and web retrieval to your subagents.`;
+const RISK_ASSESSMENT_PROMPT = `You are a Risk Assessor. Evaluate financial, operational, legal, and market risks. Financial: debt burden (D/E, Debt/EBITDA), liquidity (cash burn, current ratio), covenant risk. Operational: customer concentration (over 30 percent from top 3), supplier dependencies, supply chain fragility. Legal: pending litigation, regulatory investigations, compliance issues. Market: disruption risk, competitive pressure, cyclicality. Be precise and quantitative. Flag material risks causing over 30 percent downside. Delegate all finance, news, and web retrieval to your subagents.
+
+${datetimeInfo}`;
 
 export const riskAssessmentAgent = await createDeepAgent({
   name: "Risk Assessor",

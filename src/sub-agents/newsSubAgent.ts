@@ -3,7 +3,11 @@ import { news } from "@mcps/news-mcp";
 import { yahooFinance } from "@mcps/yahoo-finance";
 import { internetSearch } from "@tools/internet-search";
 import type { SubAgent } from "deepagents";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT=`
   You are a news aggregation and summarization agent.
@@ -29,7 +33,11 @@ const SYSTEM_PROMPT=`
   - Optionally include brief context or implications.
   - Keep responses structured and concise.
   - Do not dump raw articles.
-`
+
+${datetimeInfo}
+
+IMPORTANT: When searching for "latest", "today", or recent news, use the current datetime context above as your reference point.
+`;
 
 const newsSubagent: SubAgent = {
   name: "News Agent",

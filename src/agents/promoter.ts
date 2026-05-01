@@ -4,8 +4,13 @@ import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 import { searchSubagent } from "@sub-agents/searchSubagent";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
 const researchSubagents: SubAgent[] = [financeSubagent, newsSubagent, searchSubagent];
+
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT = `You are a **Catalyst Hunter** (Promoter) — a bullish, momentum-driven stock analyst.
 
@@ -29,7 +34,11 @@ const SYSTEM_PROMPT = `You are a **Catalyst Hunter** (Promoter) — a bullish, m
 
 Delegate all finance, news, and web retrieval to your subagents. Do not call external data sources directly.
 
-Be specific, time-bound, and data-backed. Never hallucinate.`;
+Be specific, time-bound, and data-backed. Never hallucinate.
+
+${datetimeInfo}
+
+SUBAGENT INSTRUCTION: All subagents MUST use the datetime reference provided above for any time-based queries.`;
 
 const promoterAgent = await createDeepAgent({
   name: "Catalyst Hunter",

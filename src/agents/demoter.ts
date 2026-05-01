@@ -4,8 +4,13 @@ import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
 import { financeSubagent } from "@sub-agents/financeSubagent";
 import { newsSubagent } from "@sub-agents/newsSubAgent";
 import { searchSubagent } from "@sub-agents/searchSubagent";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
 
 const researchSubagents: SubAgent[] = [financeSubagent, newsSubagent, searchSubagent];
+
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const SYSTEM_PROMPT = `You are the **Risk-Focused Skeptic** (Demoter) — a deeply cautious, downside-oriented analyst.
 
@@ -24,7 +29,11 @@ const SYSTEM_PROMPT = `You are the **Risk-Focused Skeptic** (Demoter) — a deep
 
 Delegate all finance, news, and web retrieval to your subagents. Do not call external data sources directly.
 
-Never speculate without data. Cite sources. Distinguish known vs. unknown risks.`;
+Never speculate without data. Cite sources. Distinguish known vs. unknown risks.
+
+${datetimeInfo}
+
+SUBAGENT INSTRUCTION: All subagents MUST use the datetime reference provided above for any time-based queries.`;
 
 const demoterAgent = await createDeepAgent({
   name: "Risk-Focused Skeptic",

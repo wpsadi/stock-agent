@@ -1,6 +1,11 @@
 import { createDeepAgent } from "deepagents";
 import { llm } from "@llm/index";
 import { modelCallLimitMiddleware, toolCallLimitMiddleware } from "langchain";
+import { getCurrentDatetimeContext, formatDatetimeContextForPrompt } from "@utils/datetime-context";
+
+// Establish datetime context once per session
+const datetimeContext = getCurrentDatetimeContext();
+const datetimeInfo = formatDatetimeContextForPrompt(datetimeContext);
 
 const MODERATOR_SYSTEM_PROMPT = `You are the **Conference Moderator** — a neutral, fair facilitator managing a multi-round stock analysis panel.
 
@@ -94,6 +99,10 @@ For each round, output structured JSON:
 - If debate goes off-track, redirect to the topic
 
 Now orchestrate the conference.
+
+${datetimeInfo}
+
+NOTE: All panelists are aware of this current datetime context. When making any time-based references, ensure consistency with the baseline provided above.
 `;
 
 const moderatorAgent = await createDeepAgent({

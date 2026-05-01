@@ -6,16 +6,22 @@ const internetSearch = tool(
   async ({
     query,
     maxResults = 5,
+    country = "us",
     topic = "general",
     includeRawContent = false,
   }: {
     query: string;
+    country?: string;
+
     maxResults?: number;
     topic?: "general" | "news" | "finance";
     includeRawContent?: boolean;
   }) => {
     const tavilySearch = new TavilySearch({
       maxResults,
+      includeAnswer: true,
+      country: country,
+
       tavilyApiKey: process.env.TAVILY_API_KEY,
       includeRawContent,
       topic,
@@ -32,6 +38,11 @@ const internetSearch = tool(
         .optional()
         .default(5)
         .describe("Maximum number of results to return"),
+      country: z
+        .string()
+        .optional()
+        .default("us")
+        .describe("Country code for localized search results"),
       topic: z
         .enum(["general", "news", "finance"])
         .optional()
