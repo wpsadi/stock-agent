@@ -1,13 +1,15 @@
 import { conferenceGraph } from "./graph";
 import type { ConferenceState } from "./types";
 import { createInitialState } from "./types";
+import { ROUND_TABLE_PARTICIPANTS } from "./panelRoster";
 
 export async function runConference(companyName: string, ticker: string): Promise<ConferenceState> {
   const initialState = createInitialState(companyName, ticker);
+  const discussionRounds = initialState.totalRounds - initialState.totalEvaluationRounds;
 
   console.log(`\n=== STOCK CONFERENCE: ${companyName} (${ticker}) ===`);
-  console.log(`Rounds: 4 discussion + 2 evaluation (5 total)`);
-  console.log(`Panelists: 12 (Promoter, Demoter, Moderator + 9 Bench)\n`);
+  console.log(`Rounds: ${discussionRounds} discussion + ${initialState.totalEvaluationRounds} evaluation (${initialState.totalRounds} total)`);
+  console.log(`Round-table panelists: ${ROUND_TABLE_PARTICIPANTS.length} + Moderator\n`);
 
   const result = await conferenceGraph.invoke({ state: initialState });
   const finalState = (result as { state: ConferenceState }).state;

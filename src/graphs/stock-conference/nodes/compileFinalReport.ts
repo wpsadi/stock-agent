@@ -3,6 +3,7 @@ import { SystemMessage, HumanMessage, AIMessage } from "@langchain/core/messages
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import type { ConferenceState, AgentThesis, PeerReview } from "../types";
+import { ROUND_TABLE_PARTICIPANTS } from "../panelRoster";
 
 export const compileFinalReport = async (input: { state: ConferenceState }) => {
   const { state } = input;
@@ -22,6 +23,7 @@ export const compileFinalReport = async (input: { state: ConferenceState }) => {
   const peerText = Object.entries(peerReviews)
     .map(([tgt, revs]) => `${tgt}:\n  ${revs.map((r: PeerReview) => `${r.reviewer}: ${r.review}`).join("\n  ")}`)
     .join("\n");
+  const expectedPanelists = ROUND_TABLE_PARTICIPANTS.map((p) => p.name).join(", ");
 
   const systemPrompt = `You are an equity research analyst compiling a comprehensive conference report.
 
@@ -51,6 +53,9 @@ ${transcriptText}
 
 ## Individual Theses
 ${thesesText || "(none)"}
+
+## Expected Round-Table Panelists (${ROUND_TABLE_PARTICIPANTS.length})
+${expectedPanelists}
 
 ## Peer Reviews
 ${peerText || "(none)"}

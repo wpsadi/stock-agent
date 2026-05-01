@@ -1,5 +1,5 @@
+import { createDeepAgent } from "deepagents";
 import { llm } from "@llm/index";
-import type { SubAgent } from "deepagents";
 
 const MODERATOR_SYSTEM_PROMPT = `You are the **Conference Moderator** — a neutral, fair facilitator managing a multi-round stock analysis panel.
 
@@ -95,12 +95,11 @@ For each round, output structured JSON:
 Now orchestrate the conference.
 `;
 
-const moderatorAgent: SubAgent = {
+const moderatorAgent = await createDeepAgent( {
   name: "Moderator",
-  description: "Neutral facilitator managing turn-taking, round structure, and rules enforcement in a multi-round stock panel",
   systemPrompt: MODERATOR_SYSTEM_PROMPT,
   model: llm,
-  tools: [],
-};
+  subagents: [],
+} );
 
 export { moderatorAgent };

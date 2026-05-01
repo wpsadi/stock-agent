@@ -1,6 +1,8 @@
 export { promoterAgent } from "./promoter";
 export { demoterAgent } from "./demoter";
 export { moderatorAgent } from "./moderator";
+export { coreFinanceAgent, coreNewsAgent } from "./core";
+export { politicalConnectionsAgent } from "./politicalConnections";
 export {
   financialAnalyst,
   newsSentimentAnalyst,

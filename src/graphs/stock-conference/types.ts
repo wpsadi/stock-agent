@@ -19,6 +19,24 @@ export enum ThesisDirection {
 
 import type { BaseMessage } from "@langchain/core/messages";
 
+export type AgentThreadIdentityMap = Record<string, string>;
+
+function normalizeThreadSegment( value: string ): string {
+  return value.toLowerCase().replace( /[^a-z0-9]+/g, "-" ).replace( /^-+|-+$/g, "" ) || "unknown";
+}
+
+export function createConferenceThreadId(
+  companyName: string,
+  ticker: string,
+  startedAt: number,
+  participantId: string
+): string {
+  const tickerSegment = ticker.trim() ? normalizeThreadSegment( ticker ) : "";
+  const companySegment = normalizeThreadSegment( companyName );
+  const participantSegment = normalizeThreadSegment( participantId );
+  return `stock-conference-${tickerSegment || companySegment}-${startedAt}-${participantSegment}`;
+}
+
 export interface TranscriptMessage {
   speaker: string;
   speakerRole: PanelistRole;
@@ -91,6 +109,7 @@ export interface ConferenceState {
   startedAt: number;
   completedAt?: number;
   messages: BaseMessage[]; // Chat message history
+  agentThreadIds: AgentThreadIdentityMap;
 }
 
 export function createInitialState(companyName: string, ticker: string): ConferenceState {
@@ -120,5 +139,6 @@ export function createInitialState(companyName: string, ticker: string): Confere
     startedAt: now,
     completedAt: undefined,
     messages: [],
+    agentThreadIds: {},
   };
 }

@@ -1,9 +1,10 @@
+import { createDeepAgent, type SubAgent } from "deepagents";
 import { llm } from "@llm/index";
-import { yahooFinance } from "@mcps/yahoo-finance";
-import { news } from "@mcps/news-mcp";
-import { internetSearch } from "@tools/internet-search";
-import { webCrawl } from "@mcps/web-crawler";
-import type { SubAgent } from "deepagents";
+import { financeSubagent } from "@sub-agents/financeSubagent";
+import { newsSubagent } from "@sub-agents/newsSubAgent";
+import { searchSubagent } from "@sub-agents/searchSubagent";
+
+const researchSubagents: SubAgent[] = [financeSubagent, newsSubagent, searchSubagent];
 
 const SYSTEM_PROMPT = `You are a **Catalyst Hunter** (Promoter) — a bullish, momentum-driven stock analyst.
 
@@ -25,14 +26,15 @@ const SYSTEM_PROMPT = `You are a **Catalyst Hunter** (Promoter) — a bullish, m
 
 **Output**: Structured thesis with confidence, catalysts list, price targets, and key metrics.
 
+Delegate all finance, news, and web retrieval to your subagents. Do not call external data sources directly.
+
 Be specific, time-bound, and data-backed. Never hallucinate.`;
 
-const promoterAgent: SubAgent = {
+const promoterAgent = await createDeepAgent( {
   name: "Catalyst Hunter",
-  description: "Bullish promoter; identifies near-term catalysts, growth drivers, positive inflection points",
   systemPrompt: SYSTEM_PROMPT,
   model: llm,
-  tools: [...yahooFinance, ...news, internetSearch, ...webCrawl],
-};
+  subagents: researchSubagents,
+} );
 
 export { promoterAgent };

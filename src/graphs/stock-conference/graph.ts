@@ -16,6 +16,14 @@ const StateAnnotation = Annotation.Root({
           ...prev,
           ...next,
           rawData: { ...prev.rawData, ...next.rawData },
+          agentThreadIds: { ...prev.agentThreadIds, ...next.agentThreadIds },
+        };
+      }
+      if (prev.agentThreadIds && next.agentThreadIds) {
+        return {
+          ...prev,
+          ...next,
+          agentThreadIds: { ...prev.agentThreadIds, ...next.agentThreadIds },
         };
       }
       return { ...prev, ...next };

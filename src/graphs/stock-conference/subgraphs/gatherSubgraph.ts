@@ -1,28 +1,27 @@
 import { StateGraph, START, END, Annotation } from "@langchain/langgraph";
 import type { ConferenceState } from "../types";
 import { createInitialState } from "../types";
+import { createConferenceThreadId } from "../types";
 import { runAgent } from "../nodes/utils/runAgent";
-import { promoterAgent } from "../../../agents/promoter";
-import { demoterAgent } from "../../../agents/demoter";
-import { financialAnalyst, newsSentimentAnalyst, riskAssessmentAgent } from "../../../agents/bench";
-import { forecaster, competitiveAnalyst, businessModelExpert, patternDetectionExpert, regulatoryAnalyst, macroSectorAnalyst } from "../../../agents/extendedBench";
-import { financeSubagent as coreFinanceAgent } from "../../../sub-agents/financeSubagent";
-import { newsSubagent as coreNewsAgent } from "../../../sub-agents/newsSubAgent";
+import { CONFERENCE_PARTICIPANTS, type AgentLike } from "../panelRoster";
 
 interface AgentNodeInput {
   state: ConferenceState;
 }
 
-const createAgentNode = (agent: { name: string; systemPrompt: string; tools?: any[] }, key: string) => {
+const createAgentNode = (agent: AgentLike, key: string) => {
   return async (input: AgentNodeInput) => {
     const { state } = input;
     const { companyName, ticker } = state;
+    const participantId = key;
+    const threadId = state.agentThreadIds[participantId]
+      ?? createConferenceThreadId(companyName, ticker, state.startedAt, participantId);
 
     const prompt = `Gather comprehensive information about ${companyName} (${ticker}). Include financial data, news sentiment, risk factors, competitive landscape, business model analysis, forecasting scenarios, pattern detection, regulatory environment, and macro/sector context.`;
 
     try {
-      const output = await runAgent(agent, prompt);
-      let parsed: any;
+      const output = await runAgent(agent, prompt, { threadId });
+      let parsed: unknown;
       try {
         parsed = JSON.parse(output);
       } catch {
@@ -33,36 +32,29 @@ const createAgentNode = (agent: { name: string; systemPrompt: string; tools?: an
         state: {
           ...state,
           rawData: { ...(state.rawData || {}), [key]: parsed },
+          agentThreadIds: { ...state.agentThreadIds, [participantId]: threadId },
         },
       };
-    } catch (err: any) {
-      console.error(`Agent ${key} error:`, err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`Agent ${key} error:`, message);
       return {
         state: {
           ...state,
           rawData: { ...(state.rawData || {}), [key]: null },
-          errors: [...(state.errors || []), `Agent ${key}: ${err.message}`],
+          agentThreadIds: { ...state.agentThreadIds, [participantId]: threadId },
+          errors: [...(state.errors || []), `Agent ${key}: ${message}`],
         },
       };
     }
   };
 };
 
-const agentDefs = [
-  { name: "promoter", agent: promoterAgent, key: "promoter" },
-  { name: "demoter", agent: demoterAgent, key: "demoter" },
-  { name: "financialAnalyst", agent: financialAnalyst, key: "financialAnalyst" },
-  { name: "newsSentiment", agent: newsSentimentAnalyst, key: "newsSentiment" },
-  { name: "riskAssessor", agent: riskAssessmentAgent, key: "riskAssessor" },
-  { name: "forecaster", agent: forecaster, key: "forecaster" },
-  { name: "competitiveAnalyst", agent: competitiveAnalyst, key: "competitiveAnalyst" },
-  { name: "businessModelExpert", agent: businessModelExpert, key: "businessModelExpert" },
-  { name: "patternDetector", agent: patternDetectionExpert, key: "patternDetector" },
-  { name: "regulatoryAnalyst", agent: regulatoryAnalyst, key: "regulatoryAnalyst" },
-  { name: "macroSectorAnalyst", agent: macroSectorAnalyst, key: "macroSectorAnalyst" },
-  { name: "coreFinance", agent: coreFinanceAgent, key: "coreFinance" },
-  { name: "coreNews", agent: coreNewsAgent, key: "coreNews" },
-];
+const agentDefs = CONFERENCE_PARTICIPANTS.map((participant) => ({
+  name: participant.nodeName,
+  agent: participant.agent,
+  key: participant.key,
+}));
 
 const StateAnnotation = Annotation.Root({
   state: Annotation<ConferenceState>({
@@ -73,6 +65,14 @@ const StateAnnotation = Annotation.Root({
           ...prev,
           ...next,
           rawData: { ...prev.rawData, ...next.rawData },
+          agentThreadIds: { ...prev.agentThreadIds, ...next.agentThreadIds },
+        };
+      }
+      if (prev.agentThreadIds && next.agentThreadIds) {
+        return {
+          ...prev,
+          ...next,
+          agentThreadIds: { ...prev.agentThreadIds, ...next.agentThreadIds },
         };
       }
       return { ...prev, ...next };
@@ -113,4 +113,3 @@ agentDefs.forEach(({ name }) => {
 builder.addEdge("gather_join", END);
 
 export const gatherSubgraph = builder.compile();
-
